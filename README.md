@@ -1,2 +1,2 @@
-# Graphics-Final
-The final project for Graphics. A more designed graphics engine
+# Animations
+Animations with Python and Image Magick
