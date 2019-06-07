@@ -38,7 +38,9 @@ tokens = (
     "DISPLAY", 
     "SCREEN", 
     "WEB", 
-    "CO"
+    "CO",
+    "TRIANGLE",
+    "SET_DEFAULT"
 )
 
 reserved = {
@@ -79,7 +81,9 @@ reserved = {
     "setknobs" : "SET_KNOBS",
     "focal" : "FOCAL",
     "display" : "DISPLAY",
-    "web" : "WEB"
+    "web" : "WEB",
+    "triangle" : "TRIANGLE",
+    "set_default" : "SET_DEFAULT"
 }
 
 t_ignore = " \t"
@@ -117,6 +121,35 @@ lex.lex()
 
 commands = []
 symbols = {}
+
+def p_command_triangle(p):
+    """command : TRIANGLE NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER
+               | TRIANGLE NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER SYMBOL
+               | TRIANGLE SYMBOL NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER
+               | TRIANGLE SYMBOL NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER SYMBOL"""
+    cmd = {'op' : p[1], 'constants' : None, 'cs' : None, 'args':[]}
+    arg_start = 2
+    if isinstance(p[2], str):
+        cmd['constants'] = p[2]
+        arg_start = 3
+    if len(p) == 11 and isinstance(p[10], str):
+        cmd['cs'] = p[10]
+    if len(p) == 12 and isinstance(p[11], str):
+          cmd['cs'] = p[11]
+    cmd['args'] = p[arg_start:arg_start+9]
+    commands.append(cmd)
+
+def p_command_set_default(p):
+    """command : SET_DEFAULT NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER
+               | SET_DEFAULT SYMBOL"""
+    cmd = {'op' : p[1], 'constants' : None, 'cs' : None, 'args':[]}
+    arg_start = 2
+    if isinstance(p[2], str):
+        cmd['constants'] = p[2]
+        commands.append(cmd)
+    else:
+        cmd['args'] = p[arg_start:arg_start+9]
+        commands.append(cmd)
 
 def p_input(p):
     """input :
@@ -156,7 +189,7 @@ def p_command_screen(p):
 
 def p_command_save(p):
     """command : SAVE TEXT TEXT"""
-    commands.append({'op' : p[1], 'args' : [p[2]]})
+    commands.append({'op' : p[1], 'args' : [p[2]+p[3]]})
 
 def p_command_show(p):
     """command : DISPLAY"""
@@ -195,6 +228,8 @@ def p_command_torus(p):
           cmd['cs'] = p[8]
     cmd['args'] = p[arg_start:arg_start+5]
     commands.append(cmd)
+
+
 
 def p_command_box(p):
     """command : BOX NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER
@@ -331,20 +366,20 @@ def p_command_generate_rayfiles(p):
     commands.append({'op':p[1], 'args':None})
 
 def p_command_mesh(p):
-    """command : MESH CO TEXT
-               | MESH SYMBOL CO TEXT
-               | MESH CO TEXT SYMBOL
-               | MESH SYMBOL CO TEXT SYMBOL"""
+    """command : MESH CO TEXT TEXT
+               | MESH SYMBOL CO TEXT TEXT
+               | MESH CO TEXT TEXT SYMBOL
+               | MESH SYMBOL CO TEXT TEXT SYMBOL"""
     cmd = {'op':p[1], 'args' : [], 'cs':None, 'constants':None}
-    arg_start = 2
+    arg_start = 3
     if isinstance(p[2], str):
         cmd['constants'] = p[2]
         arg_start+= 1
-    cmd['args'].append(p[arg_start])
-    if len(p) == 4 and isinstance(p[3], str):
-        cmd['cs'] = p[3]
-    if len(p) == 5 and isinstance(p[4], str):
-        cmd['cs'] = p[4]
+    cmd['args'].append(p[arg_start]+p[arg_start+1])
+    if len(p) == 6 and isinstance(p[5], str) and p[2]==":":
+        cmd['cs'] = p[5]
+    if len(p) == 7 and isinstance(p[6], str) and p[3]==":":
+        cmd['cs'] = p[6]
     commands.append(cmd)
 
 def p_save_knobs(p):
