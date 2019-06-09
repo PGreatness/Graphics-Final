@@ -44,13 +44,13 @@ tokens = (
 )
 
 reserved = {
-    "x" : "XYZ", 
-    "y" : "XYZ", 
-    "z" : "XYZ", 
-    "screen" : "SCREEN", 
+    "x" : "XYZ",
+    "y" : "XYZ",
+    "z" : "XYZ",
+    "screen" : "SCREEN",
     "light" : "LIGHT",
     "constants" : "CONSTANTS",
-    "save_coord_system" : "SAVE_COORDS", 
+    "save_coord_system" : "SAVE_COORDS",
     "camera" : "CAMERA",
     "ambient" : "AMBIENT",
     "torus" : "TORUS",
@@ -323,7 +323,12 @@ def p_command_knobs(p):
     """command : SET SYMBOL NUMBER
                | SET_KNOBS NUMBER"""
     cmd = {'op' : p[1], 'args' : [], 'knob' : None}
-    if p[1] == 'SET':
+    print("This is SET\n")
+    print(p[0])
+    print(p[1])
+    print(p[2])
+    print(p[3])
+    if p[1] == 'set':
         cmd['knob'] = p[2]
         cmd['args'].append(p[3])
         symbols[p[2]] = p[3]

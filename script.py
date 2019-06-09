@@ -52,13 +52,18 @@ def second_pass( commands, num_frames ):
         if command['op'] == 'vary':
             knob = command['knob']
             args = command['args']
+            print(command)
+            print(args)
             length = args[1] - args[0]
             speed = args[3] - args[2]
             change = speed / length
             for i in range(int(length)):
                 frames[int(i + args[0])][knob] = args[2] + change * i
+    print("This is frames:\n")
+    print(frames)
     return frames
 
+# def change_value( frames, )
 
 def run(filename):
     """
@@ -108,8 +113,13 @@ def run(filename):
     coords = []
     coords1 = []
     i = 0
+    new_sets = {}
+    set_all = False
     for frame in frames:
-        symbols.update(frame)
+        if not set_all:
+            symbols.update(frame)
+        for item in new_sets:
+            symbols[item] = new_sets[item]
         tmp = new_matrix()
         ident(tmp)
         stack = [ [ x for x in tmp ] ]
@@ -126,6 +136,21 @@ def run(filename):
             c = command['op']
             args = command['args']
             knob_value = 1
+
+            if c == 'set':
+                symbols['knob'] = args[0]
+                new_sets[command['knob']] = args[0]
+                print(symbols)
+
+            if c == 'set_knobs':
+                k = symbols.keys()
+                for w in k:
+                    if w == '.white':
+                        continue
+                    else:
+                        symbols[w] = args[0]
+                print(symbols)
+                set_all = True
 
             if c == 'box':
                 if command['constants']:
