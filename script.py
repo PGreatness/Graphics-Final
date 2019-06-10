@@ -151,6 +151,30 @@ def run(filename):
                         symbols[w] = args[0]
                 print(symbols)
                 set_all = True
+            """ if c == 'tween':
+                varies = [ x for x in commands if x['op'] == 'vary' ]
+                first_args = [ x['args'] for x in varies if x['knob'] == command['knob_list0'] ][0]
+                second_args = [ x['args'] for x in varies if x['knob'] == command['knob_list1'] ][0]
+                new_frames = [ {} for i in range(num_frames) ]
+                length = first_args[1] - first_args[0]
+                speed = first_args[3] - first_args[2]
+                change = speed / length
+                for i in range(int(args[0], args[1])):
+                    new_frames[int(i + first_args[0])][command['knob_list0']] = first_args[2] + change * i
+
+                length = first_args[1] - first_args[0]
+                speed = first_args[3] - first_args[2]
+                change = speed / length
+                for i in range(int(args[0], args[1])):
+                    new_frames[int(i + first_args[0])][command['knob_list1']] = first_args[2] + change * i
+                 """
+
+            if c == 'save_knobs':
+                print(command)
+                knob = command['knob_list']
+                knob_list = {knob:[ x[knob] for x in frames if knob in x]}
+                print(knob_list)
+                symbols["knob_list"] = knob_list
 
             if c == 'box':
                 if command['constants']:
