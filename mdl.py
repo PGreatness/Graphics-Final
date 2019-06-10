@@ -78,7 +78,7 @@ reserved = {
     "gouraud" : "SHADING_TYPE",
     "raytrace" : "SHADING_TYPE",
     "wireframe" : "SHADING_TYPE",
-    "setknobs" : "SET_KNOBS",
+    "set_knobs" : "SET_KNOBS",
     "focal" : "FOCAL",
     "display" : "DISPLAY",
     "web" : "WEB",
@@ -320,20 +320,18 @@ def p_command_vary(p):
     commands.append(cmd)
 
 def p_command_knobs(p):
-    """command : SET SYMBOL NUMBER
-               | SET_KNOBS NUMBER"""
+    """command : SET_KNOBS NUMBER
+               | SET SYMBOL NUMBER"""
     cmd = {'op' : p[1], 'args' : [], 'knob' : None}
     print("This is SET\n")
-    print(p[0])
-    print(p[1])
-    print(p[2])
-    print(p[3])
+    print(p)
     if p[1] == 'set':
         cmd['knob'] = p[2]
         cmd['args'].append(p[3])
         symbols[p[2]] = p[3]
     else:
         cmd['args'].append(p[2])
+    print('========= ' + str(cmd))
     commands.append(cmd)
 
 def p_command_ambient(p):
