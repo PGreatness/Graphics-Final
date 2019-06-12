@@ -63,7 +63,14 @@ def second_pass( commands, num_frames ):
     print(frames)
     return frames
 
-# def change_value( frames, )
+# all the knobs in the current MDL file
+def third_pass( commands ):
+    knob_list = []
+    for command in commands:
+        if command['op'] == 'vary':
+            if command['knob'] not in knob_list:
+                knob_list.append(command['knob'])
+    return knob_list
 
 def run(filename):
     """
@@ -99,7 +106,7 @@ def run(filename):
 
     (name, num_frames) = first_pass(commands)
     frames = second_pass(commands, num_frames)
-
+    kb_list = third_pass( commands )
 
     tmp = new_matrix()
     ident( tmp )
@@ -145,9 +152,7 @@ def run(filename):
             if c == 'set_knobs':
                 k = symbols.keys()
                 for w in k:
-                    if w == '.white':
-                        continue
-                    else:
+                    if w in kb_list:
                         symbols[w] = args[0]
                 print(symbols)
                 set_all = True
