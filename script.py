@@ -123,10 +123,7 @@ def run(filename):
     new_sets = {}
     set_all = False
     for frame in frames:
-        if not set_all:
-            symbols.update(frame)
-        for item in new_sets:
-            symbols[item] = new_sets[item]
+        symbols.update(frame)
         tmp = new_matrix()
         ident(tmp)
         stack = [ [ x for x in tmp ] ]
@@ -154,25 +151,9 @@ def run(filename):
                 for w in k:
                     if w in kb_list:
                         symbols[w] = args[0]
+                        new_sets[w] = args[0]
                 print(symbols)
                 set_all = True
-            """ if c == 'tween':
-                varies = [ x for x in commands if x['op'] == 'vary' ]
-                first_args = [ x['args'] for x in varies if x['knob'] == command['knob_list0'] ][0]
-                second_args = [ x['args'] for x in varies if x['knob'] == command['knob_list1'] ][0]
-                new_frames = [ {} for i in range(num_frames) ]
-                length = first_args[1] - first_args[0]
-                speed = first_args[3] - first_args[2]
-                change = speed / length
-                for i in range(int(args[0], args[1])):
-                    new_frames[int(i + first_args[0])][command['knob_list0']] = first_args[2] + change * i
-
-                length = first_args[1] - first_args[0]
-                speed = first_args[3] - first_args[2]
-                change = speed / length
-                for i in range(int(args[0], args[1])):
-                    new_frames[int(i + first_args[0])][command['knob_list1']] = first_args[2] + change * i
-                 """
 
             if c == 'save_knobs':
                 print(command)
@@ -203,10 +184,14 @@ def run(filename):
             elif c == 'torus':
                 if command['constants']:
                     reflect = command['constants']
+                print('Got 1')
                 add_torus(tmp,
                         args[0], args[1], args[2], args[3], args[4], step_3d)
+                print('got 2')
                 matrix_mult( stack[-1], tmp )
+                print('got 3')
                 draw_polygons(tmp, screen, zbuffer, view, ambient, light, symbols, reflect)
+                print('got 4')
                 tmp = []
                 reflect = '.white'
             elif c == 'line':
@@ -218,7 +203,9 @@ def run(filename):
             elif c == 'move':
                 vel = 1
                 if command['knob'] is not None:
-                    vel = symbols[command['knob']]
+                    vel = new_sets[command['knob']] if not NameError else symbols[command['knob']]
+                print(vel)
+                print(new_sets)
                 tmp = make_translate(args[0] * vel, args[1] * vel, args[2] * vel)
                 matrix_mult(stack[-1], tmp)
                 stack[-1] = [x[:] for x in tmp]
@@ -226,7 +213,7 @@ def run(filename):
             elif c == 'scale':
                 vel = 1
                 if command['knob'] is not None:
-                    vel = symbols[command['knob']]
+                    vel = new_sets[command['knob']] if not NameError else symbols[command['knob']]
                 tmp = make_scale(args[0] * vel, args[1] * vel, args[2] * vel)
                 matrix_mult(stack[-1], tmp)
                 stack[-1] = [x[:] for x in tmp]
@@ -234,7 +221,7 @@ def run(filename):
             elif c == 'rotate':
                 vel = 1
                 if command['knob'] is not None:
-                    vel = symbols[command['knob']]
+                    vel = new_sets[command['knob']] if not NameError else symbols[command['knob']]
                 theta = args[1] * (math.pi/180)
                 if args[0] == 'x':
                     tmp = make_rotX(theta * vel)
