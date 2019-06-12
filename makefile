@@ -2,6 +2,7 @@ test: face.mdl lex.py main.py matrix.py mdl.py display.py draw.py gmath.py yacc.
 	python main.py simple_anim.mdl
 
 clean:
+	rm anim/*.ppm anim/*.png
 	rm *pyc *out parsetab.py
 
 clear:
