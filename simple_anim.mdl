@@ -3,6 +3,8 @@ basename simple
 move .1 0.2 3.4
 move -.1 -0.2 -3.4
 scale 50 50 50
-constants MYLIGHTS 1 1 1 1 1 1 1 1 1
-mesh MYLIGHTS :teapot.obj
+box 30 30 30 10 10 10
+save_coord_system foody
+move 1 20 40
+box 30 30 30 10 10 10 foody
 push

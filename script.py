@@ -161,10 +161,11 @@ def run(filename):
             elif c == 'save_coord_system':
                 try: # check if coors exists --> might give NameError
                     s = symbols['coors']
-                    s.append({ command['cs'] : stack[-1] })
+                    s[command['cs']] = stack[-1]
                 except Exception as e: # gave a NameError
                     print(e)
                     symbols['coors'] = { command['cs'] : stack[-1] }
+                print(symbols['coors'])
 
             elif c == 'constants':
                 symbols[command['constants']] = ['constants',
@@ -201,7 +202,10 @@ def run(filename):
                 add_box(tmp,
                         args[0], args[1], args[2],
                         args[3], args[4], args[5])
-                matrix_mult( stack[-1], tmp )
+                if (command['cs']):
+                    matrix_mult(symbols['coors'][command['cs']], tmp)
+                else:
+                    matrix_mult( stack[-1], tmp )
                 lighting = []
                 if set_lights:
                     wait = symbols[set_lights[0]][1]
