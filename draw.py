@@ -115,6 +115,56 @@ def draw_polygons( polygons, screen, zbuffer, view, ambient, light, symbols, ref
             #            screen, zbuffer, color)
         point+= 3
 
+def generate_mesh(file):
+    points = []
+    f = open(file)
+    lines = f.readlines()
+    for line in lines:
+        line = line.split()
+        if len(line) > 0 and line[0] == 'v':
+            points.append([float(line[1]), float(line[2]), float(line[3])])
+    f.close()
+    return points
+
+def add_mesh( polygons, file ):
+    print(file)
+    points = generate_mesh(file)
+    f = open(file)
+    read_lines = f.readlines()
+    for line in read_lines:
+        line.replace("  ", " ")
+        line = line.strip().split()
+        if len(line) > 0 and line[0] == 'f':
+            vertices = line[1:]
+            print(len(vertices))
+            print(len(points))
+            for i in range(1, len(vertices) - 1):
+                print(i)
+                if '//' in vertices[0] or '/' in vertices[0]:
+                    p0 = int(vertices[0][0]) - 1
+                    p1 = int(vertices[i][0]) - 1
+                    p2 = int(vertices[i + 1][0]) - 1
+                else:
+                    p0 = int(vertices[0]) - 1
+                    p1 = int(vertices[i]) - 1
+                    p2 = int(vertices[i + 1]) - 1
+                try:
+                    print(p0)
+                    print(p1)
+                    print(p2)
+                    add_polygon(
+                                polygons,
+                                points[p0][0], points[p0][1], points[p0][2],
+                                points[p1][0], points[p1][1], points[p1][2],
+                                points[p2][0], points[p2][1], points[p2][2]
+                                )
+                except Exception as e:
+                    print("An error has occurred with mesh adding:")
+                    print(e)
+                    exit()
+    f.close()
+
+
 
 def add_box( polygons, x, y, z, width, height, depth ):
     x1 = x + width

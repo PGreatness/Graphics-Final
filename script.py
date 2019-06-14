@@ -52,15 +52,15 @@ def second_pass( commands, num_frames ):
         if command['op'] == 'vary':
             knob = command['knob']
             args = command['args']
-            print(command)
-            print(args)
+            # print(command)
+            # print(args)
             length = args[1] - args[0]
             speed = args[3] - args[2]
             change = speed / length
             for i in range(int(length)):
                 frames[int(i + args[0])][knob] = args[2] + change * i
-    print("This is frames:\n")
-    print(frames)
+    # print("This is frames:\n")
+    # print(frames)
     return frames
 
 # all the knobs in the current MDL file
@@ -97,6 +97,7 @@ def run(filename):
               255,
               255]]
 
+    set_lights = []
     color = [0, 0, 0]
     symbols['.white'] = ['constants',
                          {'red': [0.2, 0.5, 0.5],
@@ -122,8 +123,16 @@ def run(filename):
     i = 0
     new_sets = {}
     set_all = False
+    print(frames)
+    print(commands)
     for frame in frames:
         symbols.update(frame)
+        print(new_sets)
+        for x in range(int(num_frames)):
+            for item in new_sets:
+                print(frames[x])
+                print(item)
+                frames[x][item] = new_sets[item]
         tmp = new_matrix()
         ident(tmp)
         stack = [ [ x for x in tmp ] ]
@@ -141,46 +150,81 @@ def run(filename):
             args = command['args']
             knob_value = 1
 
-            if c == 'set':
-                symbols['knob'] = args[0]
-                new_sets[command['knob']] = args[0]
+            if c == 'light':
+                set_lights = [command['light']]
+
+            elif c == 'save_coord_system':
+                try: # check if coors exists --> might give NameError
+                    s = symbols['coors']
+                    s.append({ command['cs'] : stack[-1] })
+                except Exception as e: # gave a NameError
+                    print(e)
+                    symbols['coors'] = { command['cs'] : stack[-1] }
+
+            elif c == 'constants':
+                symbols[command['constants']] = ['constants',
+                                                    {'red':args[:3],
+                                                    'green':args[3:6],
+                                                    'blue':args[6:]}
+                                                ]
                 print(symbols)
 
-            if c == 'set_knobs':
+            elif c == 'set':
+                symbols['knob'] = args[0]
+                new_sets[command['knob']] = args[0]
+                # print(symbols)
+
+            elif c == 'set_knobs':
                 k = symbols.keys()
                 for w in k:
                     if w in kb_list:
                         symbols[w] = args[0]
                         new_sets[w] = args[0]
-                print(symbols)
+                # print(symbols)
                 set_all = True
 
-            if c == 'save_knobs':
+            elif c == 'save_knobs':
                 print(command)
                 knob = command['knob_list']
                 knob_list = {knob:[ x[knob] for x in frames if knob in x]}
-                print(knob_list)
+                # print(knob_list)
                 symbols["knob_list"] = knob_list
 
-            if c == 'box':
+            elif c == 'box':
                 if command['constants']:
                     reflect = command['constants']
                 add_box(tmp,
                         args[0], args[1], args[2],
                         args[3], args[4], args[5])
                 matrix_mult( stack[-1], tmp )
-                draw_polygons(tmp, screen, zbuffer, view, ambient, light, symbols, reflect)
+                lighting = []
+                if set_lights:
+                    wait = symbols[set_lights[0]][1]
+                    lighting.append(wait['location'])
+                    lighting.append(wait['color'])
+                else:
+                    lighting = light
+                draw_polygons(tmp, screen, zbuffer, view, ambient, lighting, symbols, reflect)
                 tmp = []
                 reflect = '.white'
+
             elif c == 'sphere':
                 if command['constants']:
                     reflect = command['constants']
                 add_sphere(tmp,
                         args[0], args[1], args[2], args[3], step_3d)
-                matrix_mult( stack[-1], tmp )
-                draw_polygons(tmp, screen, zbuffer, view, ambient, light, symbols, reflect)
+                matrix_mult( stack[-1], tmp)
+                lighting = []
+                if set_lights:
+                    wait = symbols[set_lights[0]][1]
+                    lighting.append(wait['location'])
+                    lighting.append(wait['color'])
+                else:
+                    lighting = light
+                draw_polygons(tmp, screen, zbuffer, view, ambient, lighting, symbols, reflect)
                 tmp = []
                 reflect = '.white'
+
             elif c == 'torus':
                 if command['constants']:
                     reflect = command['constants']
@@ -190,16 +234,45 @@ def run(filename):
                 print('got 2')
                 matrix_mult( stack[-1], tmp )
                 print('got 3')
-                draw_polygons(tmp, screen, zbuffer, view, ambient, light, symbols, reflect)
+                print(light)
+                lighting = []
+                if set_lights:
+                    wait = symbols[set_lights[0]][1]
+                    lighting.append(wait['location'])
+                    lighting.append(wait['color'])
+                else:
+                    lighting = light
+                draw_polygons(tmp, screen, zbuffer, view, ambient, lighting, symbols, reflect)
+                print(lighting)
                 print('got 4')
                 tmp = []
                 reflect = '.white'
+
+            elif c == 'mesh':
+                print('mesh got')
+                if command['constants']:
+                    reflect = command['constants']
+                add_mesh(tmp, command['args'][0])
+                matrix_mult( stack[-1], tmp )
+                print(light)
+                lighting = []
+                if set_lights:
+                    wait = symbols[set_lights[0]][1]
+                    lighting.append(wait['location'])
+                    lighting.append(wait['color'])
+                else:
+                    lighting = light
+                draw_polygons(tmp, screen, zbuffer, view, ambient, lighting, symbols, reflect)
+                tmp = []
+                reflect = '.white'
+
             elif c == 'line':
                 add_edge(tmp,
                         args[0], args[1], args[2], args[3], args[4], args[5])
                 matrix_mult( stack[-1], tmp )
                 draw_lines(tmp, screen, zbuffer, color)
                 tmp = []
+
             elif c == 'move':
                 vel = 1
                 if command['knob'] is not None:
@@ -210,6 +283,7 @@ def run(filename):
                 matrix_mult(stack[-1], tmp)
                 stack[-1] = [x[:] for x in tmp]
                 tmp = []
+
             elif c == 'scale':
                 vel = 1
                 if command['knob'] is not None:
@@ -218,6 +292,7 @@ def run(filename):
                 matrix_mult(stack[-1], tmp)
                 stack[-1] = [x[:] for x in tmp]
                 tmp = []
+
             elif c == 'rotate':
                 vel = 1
                 if command['knob'] is not None:
@@ -232,14 +307,19 @@ def run(filename):
                 matrix_mult( stack[-1], tmp )
                 stack[-1] = [ x[:] for x in tmp]
                 tmp = []
+
             elif c == 'push':
                 stack.append([x[:] for x in stack[-1]] )
+
             elif c == 'pop':
                 stack.pop()
+
             elif c == 'display':
                 display(screen)
+
             elif c == 'save':
                 save_extension(screen, args[0])
+
             # end operation loop
         print('/anim/' + name + "%03d"%i)
         save_extension(screen, 'anim/' + name + "%03d"%i + '.gif')
