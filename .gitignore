@@ -3,8 +3,18 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Parser files
+parser.out
+parsetab.py
+
 # VSCode folder
 .vscode
+
+# PNGs
+*/*.p*
+
+# GIFs
+*.gif
 
 # C extensions
 *.so
