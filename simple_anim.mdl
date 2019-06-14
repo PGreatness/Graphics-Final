@@ -1,8 +1,8 @@
 frames 50
 basename simple
-light thing 1.0 1.0 1.0 1.0 1.0 1.0
-save_coord_system lol
-constants MYLIGHTS 2 3 4 5 6 7 8 9 10
-push
+move .1 0.2 3.4
+move -.1 -0.2 -3.4
+scale 50 50 50
+constants MYLIGHTS 1 1 1 1 1 1 1 1 1
 mesh MYLIGHTS :teapot.obj
 push
