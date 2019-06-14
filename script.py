@@ -27,6 +27,11 @@ def first_pass( commands ):
             name = command['args'][0]
         if command['op'] == 'frames':
             num_frames = command['args'][0]
+    if name == '':
+        name = 'default'
+        print(f"Basename not specified, using \"{name}\"")
+    if num_frames == 1:
+        print(f"Number of frames not specified, using \"{num_frames}\"")
     return (name, num_frames)
 
 """======== second_pass( commands ) ==========
