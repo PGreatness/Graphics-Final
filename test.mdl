@@ -5,7 +5,7 @@ push
 move .1 0.2 3.4
 move -.1 -0.2 -3.4
 move 1 2 3 fred
-clamera 1 2 3 10 20 30 
+camera 1 2 3 10 20 30 
 light f 1 2 3 4 5 6
 pop
 move 2 3 4 other
