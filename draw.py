@@ -116,7 +116,7 @@ def draw_polygons( polygons, screen, zbuffer, view, ambient, light, symbols, ref
         point+= 3
 
 def generate_mesh(file):
-    points = []
+    points = [None]
     f = open(file)
     lines = f.readlines()
     for line in lines:
@@ -138,20 +138,19 @@ def add_mesh( polygons, file ):
             vertices = line[1:]
             print(len(vertices))
             print(len(points))
-            for i in range(1, len(vertices) - 1):
+            for i in range(3):
                 print(i)
-                if '//' in vertices[0] or '/' in vertices[0]:
-                    p0 = int(vertices[0][0]) - 1
-                    p1 = int(vertices[i][0]) - 1
-                    p2 = int(vertices[i + 1][0]) - 1
-                else:
+                print(vertices)
+                # if '//' in vertices[0] or '/' in vertices[0]:
+                p0 = int(vertices[0])
+                p1 = int(vertices[1])
+                p2 = int(vertices[2])
+                print((p0, p1, p2))
+                """ else:
                     p0 = int(vertices[0]) - 1
                     p1 = int(vertices[i]) - 1
-                    p2 = int(vertices[i + 1]) - 1
+                    p2 = int(vertices[i + 1]) - 1 """
                 try:
-                    print(p0)
-                    print(p1)
-                    print(p2)
                     add_polygon(
                                 polygons,
                                 points[p0][0], points[p0][1], points[p0][2],
