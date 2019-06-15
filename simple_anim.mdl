@@ -4,18 +4,17 @@ rotate y 360 spinny
 rotate z 360 spinny
 light fs 1 1 1 1 1 1
 light we 90 90 90 90 90 90
+move 100 100 0
+sphere 0 0 0 100
 rotate x 30
 rotate y 30
 move 250 150 0
-scale 50 50 50
-constants MYLIGHTS 1 1 1 1 1 1 1 1 1
-mesh MYLIGHTS :teapot.obj
+scale 10 10 10
+constants MYLIGHTS 2 3 4 5 6 7 8 9 10
+mesh MYLIGHTS :cow.obj
 push
-box 0 0 0 20 20 20
-push
-move 0 0 250
-mesh MYLIGHTS :teapot.obj
-push
+rotate x -30
+rotate y -30
 vary spinny 0 49 0 1
 vary bigenator 0 24 0 1
 vary bigenator 25 49 1 0
